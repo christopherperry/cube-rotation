@@ -8,10 +8,9 @@ public class CubeSurfaceView extends GLSurfaceView {
 
   private static final float TOUCH_SCALE_FACTOR = 0.25f;
 
-  private CubeRenderer mRenderer;
-  private float mPreviousX;
-  private float mPreviousY;
-  private long downTime;
+  private CubeRenderer renderer;
+  private float previousX;
+  private float previousY;
 
   public CubeSurfaceView(Context context) {
     super(context);
@@ -19,7 +18,7 @@ public class CubeSurfaceView extends GLSurfaceView {
   }
 
   public void setRenderer(CubeRenderer renderer) {
-    mRenderer = renderer;
+    this.renderer = renderer;
     super.setRenderer(renderer);
     setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
   }
@@ -33,32 +32,20 @@ public class CubeSurfaceView extends GLSurfaceView {
     float y = event.getY();
 
     switch (event.getAction()) {
-      case MotionEvent.ACTION_DOWN:
-        downTime = event.getEventTime();
-        break;
       case MotionEvent.ACTION_MOVE:
-        float dx = x - mPreviousX;
-        float dy = y - mPreviousY;
+        float dx = x - previousX;
+        float dy = y - previousY;
 
         if (Math.abs(dx) > Math.abs(dy)) {
-          mRenderer.setHorizontal(mRenderer.getHorizontal() + (int) ((dx) * TOUCH_SCALE_FACTOR));
+          renderer.setHorizontal(renderer.getHorizontal() + (int) ((dx) * TOUCH_SCALE_FACTOR));
         } else {
-          mRenderer.setVertical(mRenderer.getVertical() + (int) ((dy) * TOUCH_SCALE_FACTOR));
+          renderer.setVertical(renderer.getVertical() + (int) ((dy) * TOUCH_SCALE_FACTOR));
         }
         requestRender();
         break;
-
-      case MotionEvent.ACTION_UP:
-        if (event.getEventTime() - downTime <= 250) {
-//          mRenderer.onClick(x, y);
-          requestRender();
-
-          callOnClick();
-        }
-        break;
     }
-    mPreviousX = x;
-    mPreviousY = y;
+    previousX = x;
+    previousY = y;
 
     return true;
   }

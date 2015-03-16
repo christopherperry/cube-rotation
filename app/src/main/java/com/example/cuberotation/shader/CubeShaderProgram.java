@@ -1,4 +1,4 @@
-package com.example.cuberotation;
+package com.example.cuberotation.shader;
 
 import android.content.Context;
 import android.graphics.Color;

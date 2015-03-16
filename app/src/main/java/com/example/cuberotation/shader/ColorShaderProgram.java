@@ -1,7 +1,11 @@
-package com.example.cuberotation;
+package com.example.cuberotation.shader;
 
 import android.content.Context;
 
+
+import com.example.cuberotation.R;
+import com.example.cuberotation.shader.ShaderHelper;
+import com.example.cuberotation.shader.TextResourceReader;
 
 import static android.opengl.GLES20.glUseProgram;
 

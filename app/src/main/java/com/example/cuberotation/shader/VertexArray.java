@@ -1,4 +1,4 @@
-package com.example.cuberotation;
+package com.example.cuberotation.shader;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
