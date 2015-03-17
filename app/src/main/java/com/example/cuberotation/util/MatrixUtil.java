@@ -27,6 +27,17 @@ public class MatrixUtil {
     public float[] rotation = new float[]{0f, 0f, 0f};
     public float[] scale = new float[]{1f, 1f, 1f};
 
+    private float[] modelMatrix = new float[16];
+    private float[] currentRotation = new float[16];
+
+    public static enum Space {
+      SELF, WORLD
+    }
+
+    public void rotate(float[] axis, float angle, Space relativeTo) {
+
+    }
+
     public float[] localToWorldMatrix() {
       float[] scaleMatrix = scaleMatrix(scale);
       float[] rotationMatrix = rotationMatrixFromQuaternions(rotation);
