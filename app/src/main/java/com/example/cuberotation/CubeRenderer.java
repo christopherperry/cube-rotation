@@ -17,17 +17,14 @@ import static android.opengl.GLES20.glEnable;
 import static android.opengl.GLES20.glViewport;
 import static android.opengl.Matrix.multiplyMM;
 import static android.opengl.Matrix.perspectiveM;
-import static android.opengl.Matrix.rotateM;
-import static android.opengl.Matrix.setIdentityM;
-import static android.opengl.Matrix.translateM;
-import static com.example.cuberotation.util.MatrixUtil.Transform;
-import static com.example.cuberotation.util.MatrixUtil.multiplyMatrices;
-import static java.lang.System.arraycopy;
 
 public class CubeRenderer implements GLSurfaceView.Renderer {
   private static final int ALL_BUFFERS = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
   private static final float Z_NEAR = 1f;
   private static final float Z_FAR = 40f;
+  public static final float[] AXIS_X = new float[]{1f, 0f, 0f};
+  public static final float[] AXIS_Y = new float[]{0f, 1f, 0f};
+  public static final float[] AXIS_Z = new float[]{0f, 0f, 1f};
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // State variables
@@ -38,11 +35,6 @@ public class CubeRenderer implements GLSurfaceView.Renderer {
 
   private CubeShaderProgram cubeShaderProgram;
   private Transform transform = new Transform();
-
-  private float[] accumulatedRotation = new float[16];
-  private float[] currentRotation = new float[16];
-  private float[] modelMatrix = new float[16];
-  private float[] temporaryMatrix = new float[16];
 
   public float dx;
   public float dy;
@@ -59,7 +51,6 @@ public class CubeRenderer implements GLSurfaceView.Renderer {
   public void onSurfaceCreated(GL10 glUnused, EGLConfig config) {
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     cubeShaderProgram = new CubeShaderProgram(context);
-    setIdentityM(accumulatedRotation, 0);
   }
 
   @Override
@@ -76,7 +67,8 @@ public class CubeRenderer implements GLSurfaceView.Renderer {
     glClear(ALL_BUFFERS);
     glEnable(GL_DEPTH_TEST);
 
-    float[] mvpMatrix = multiplyMatrices(projectionMatrix, getModelMatrix());
+    float[] mvpMatrix = new float[16];
+    multiplyMM(mvpMatrix, 0, projectionMatrix, 0, getModelMatrix(), 0);
 
     cubeShaderProgram.draw(mvpMatrix);
   }
@@ -85,35 +77,14 @@ public class CubeRenderer implements GLSurfaceView.Renderer {
   // Private Methods
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
-//  private float[] getMvpMatrix() {
-//    transform.position = new float[]{0f, 0f, -2f};
-//    transform.rotation = new float[]{vertical, horizontal, 0f};
-//
-//    return multiplyMatrices(projectionMatrix, transform.localToWorldMatrix());
-//  }
-
   private float[] getModelMatrix() {
-    // Draw a cube.
-    // Translate the cube into the screen.
-    setIdentityM(modelMatrix, 0);
-    translateM(modelMatrix, 0, 0.0f, 0f, -2f);
+    transform.position = new float[]{0f, 0f, -2f};
+    transform.rotate(AXIS_Y, dx, Transform.Space.WORLD);
+    transform.rotate(AXIS_X, dy, Transform.Space.WORLD);
 
-    // Set a matrix that contains the current rotation.
-    setIdentityM(currentRotation, 0);
-    rotateM(currentRotation, 0, dx, 0.0f, 1.0f, 0.0f);
-    rotateM(currentRotation, 0, dy, 1.0f, 0.0f, 0.0f);
-    dx = 0.0f;
-    dy = 0.0f;
+    dx = 0;
+    dy = 0;
 
-    // Multiply the current rotation by the accumulated rotation, and then set the accumulated
-    // rotation to the result.
-    multiplyMM(temporaryMatrix, 0, currentRotation, 0, accumulatedRotation, 0);
-    arraycopy(temporaryMatrix, 0, accumulatedRotation, 0, 16);
-
-    // Rotate the cube taking the overall rotation into account.
-    multiplyMM(temporaryMatrix, 0, modelMatrix, 0, accumulatedRotation, 0);
-    arraycopy(temporaryMatrix, 0, modelMatrix, 0, 16);
-
-    return modelMatrix;
+    return transform.localToWorldMatrix();
   }
 }

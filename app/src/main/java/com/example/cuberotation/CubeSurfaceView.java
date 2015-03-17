@@ -2,7 +2,6 @@ package com.example.cuberotation;
 
 import android.content.Context;
 import android.opengl.GLSurfaceView;
-import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 
 public class CubeSurfaceView extends GLSurfaceView {
@@ -21,6 +20,7 @@ public class CubeSurfaceView extends GLSurfaceView {
   public void setRenderer(CubeRenderer renderer) {
     this.renderer = renderer;
     super.setRenderer(renderer);
+    setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
   }
 
   @Override
@@ -36,11 +36,10 @@ public class CubeSurfaceView extends GLSurfaceView {
         float dx = x - previousX;
         float dy = y - previousY;
 
-        if (Math.abs(dx) > Math.abs(dy)) {
-          renderer.dx += (int) ((dx) * TOUCH_SCALE_FACTOR);
-        } else {
-          renderer.dy += (int) ((dy) * TOUCH_SCALE_FACTOR);
-        }
+        renderer.dy += (int) ((dy) * TOUCH_SCALE_FACTOR);
+        renderer.dx += (int) ((dx) * TOUCH_SCALE_FACTOR);
+        requestRender();
+
         return true;
     }
     previousX = x;
